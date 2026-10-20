@@ -22,8 +22,36 @@ def get_file_sha256(uploaded_file) -> str:
     return hasher.hexdigest()
 
 
+def extract_engines(raw_result) -> list[dict]:
+    """Pull per-engine verdicts from VirusTotal raw JSON."""
+    if not raw_result or not isinstance(raw_result, dict):
+        return []
+
+    data = raw_result.get("data") or {}
+    attrs = data.get("attributes") or {}
+    results = attrs.get("results") or attrs.get("last_analysis_results") or {}
+    if not isinstance(results, dict):
+        return []
+
+    engines = []
+    for name, info in results.items():
+        if not isinstance(info, dict):
+            continue
+        category = (info.get("category") or "undetected").lower()
+        engines.append({
+            "engine": name,
+            "category": category,
+            "result": info.get("result") or category,
+        })
+
+    order = {"malicious": 0, "suspicious": 1, "harmless": 2, "undetected": 3, "timeout": 4, "type-unsupported": 5, "failure": 6}
+    engines.sort(key=lambda e: (order.get(e["category"], 99), e["engine"].lower()))
+    return engines
+
+
 def build_response(scan: ScanResult) -> dict:
     """Serialize ScanResult to JSON for the frontend."""
+    engines = extract_engines(scan.raw_result)
     return {
         "id": scan.id,
         "scan_type": scan.scan_type,
@@ -39,7 +67,10 @@ def build_response(scan: ScanResult) -> dict:
         "url": scan.url,
         "file_name": scan.file_name,
         "file_hash": scan.file_hash_sha256,
+        "file_size": scan.file_size,
         "created_at": scan.created_at.strftime("%d.%m.%Y %H:%M"),
+        "engines": engines,
+        "export_url": f"/scan/{scan.id}/export/" if scan.id else None,
     }
 
 

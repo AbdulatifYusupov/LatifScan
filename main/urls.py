@@ -7,6 +7,7 @@ urlpatterns = [
     path('scan/file/', views.ScanFileView.as_view(), name='scan_file'),
     path('history/', views.HistoryView.as_view(), name='history'),
     path('scan/<int:scan_id>/', views.ScanDetailView.as_view(), name='scan_detail'),
+    path('scan/<int:scan_id>/export/', views.ScanExportView.as_view(), name='scan_export'),
     path('scan/qr/', views.ScanQRView.as_view(), name='scan_qr'),
     path('scan/password/', views.ScanPasswordView.as_view(), name='scan_password'),
     path('scan/screenshot/', views.ScanScreenshotView.as_view(), name='scan_screenshot'),
