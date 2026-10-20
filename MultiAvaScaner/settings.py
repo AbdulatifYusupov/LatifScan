@@ -117,7 +117,7 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
-load_dotenv('api.env')
+load_dotenv(BASE_DIR / 'api.env')
 
 VIRUSTOTAL_API_KEY = os.getenv("VIRUSTOTAL_API_KEY")
 HIBP_API_KEY = os.getenv("HIBP_API_KEY")
