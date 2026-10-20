@@ -41,6 +41,23 @@ class ScanDetailView(View):
         return JsonResponse(build_response(scan))
 
 
+class ScanExportView(View):
+    """Download full scan report as JSON."""
+
+    def get(self, request, scan_id):
+        try:
+            scan = ScanResult.objects.get(id=scan_id)
+        except ScanResult.DoesNotExist:
+            return error_response("Не найдено", status=404)
+
+        payload = build_response(scan)
+        payload["raw_result"] = scan.raw_result
+        response = JsonResponse(payload, json_dumps_params={"ensure_ascii": False, "indent": 2})
+        filename = f"latifscan_{scan.scan_type}_{scan.id}.json"
+        response["Content-Disposition"] = f'attachment; filename="{filename}"'
+        return response
+
+
 class ScanURLView(View):
     @rate_limit(max_requests=8, window=60, key_prefix="scan_url")
     def post(self, request):
