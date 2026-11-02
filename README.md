@@ -31,8 +31,6 @@ python manage.py migrate
 python manage.py runserver
 ```
 
-http://127.0.0.1:8000/
-
 ### Docker
 
 ```bash
@@ -61,13 +59,3 @@ DEBUG=True             # local
 | GET | `/scan/<id>/` | Scan JSON |
 | GET | `/scan/<id>/export/` | Download full JSON report |
 
-## Roadmap
-
-- [ ] ClamAV / YARA local engines
-- [ ] Background jobs (Celery/Redis)
-- [ ] Auth + private history
-- [ ] Rename Django package `MultiAvaScaner` → `latifscan`
-
-## License
-
-MIT
